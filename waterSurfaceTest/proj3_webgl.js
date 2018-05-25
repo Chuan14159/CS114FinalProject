@@ -194,21 +194,21 @@ function keyUp(event){
 
 function handleKey(){ //cam transform tick
     //console.log(keyCode);
-    translation = vec3.create();
+    var transition = vec3.create();
     if (keyCode[0] == 1) { //W
-        vec3.add(translation, [Math.sin(Math.PI/2-(rotY+Math.PI/2)),0,Math.cos(Math.PI/2-(rotY+Math.PI/2))]);
+        vec3.add(transition, [Math.sin(Math.PI/2-(rotY+Math.PI/2)),0,Math.cos(Math.PI/2-(rotY+Math.PI/2))]);
     }
     if (keyCode[1] == 1) { //A
         rotY -= 0.02;
     }
     if (keyCode[2] == 1) { //S
-        vec3.subtract(translation, [Math.sin(Math.PI/2-(rotY+Math.PI/2)),0,Math.cos(Math.PI/2-(rotY+Math.PI/2))]);
+        vec3.subtract(transition, [Math.sin(Math.PI/2-(rotY+Math.PI/2)),0,Math.cos(Math.PI/2-(rotY+Math.PI/2))]);
     }
     if (keyCode[3] == 1) { //D
         rotY += 0.02;
     }
-    vec3.scale(translation,0.02);
-    vec3.add(transVec,translation);
+    vec3.scale(transition,0.02);
+    vec3.add(transVec,transition);
 }
 
 
