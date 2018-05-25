@@ -7,13 +7,13 @@ function changeResolution(sel) {
     var width = 0, height = 0;
     switch ( id ) {
         case 0:
-            width = 480; height = 640; break;
+            width = 640; height = 480; break;
 
         case 1:
-            width = 600; height = 800; break;
+            width = 800; height = 600; break;
 
         case 2:
-            width = 720; height = 960; break;
+            width = 960; height = 720; break;
 
         default:
             alert("Unknown resolution!");
@@ -98,11 +98,11 @@ function changeMeshResolution(value) {
     var id = parseInt(value, 10);
     switch ( id ) {
     case 1:
-        meshResolution = 15; break;
+        meshResolution = 50; break;
     case 2:
-        meshResolution = 25; break;
+        meshResolution = 75; break;
     case 3:
-        meshResolution = 35; break;
+        meshResolution = 100; break;
     }
     initMesh();
     initBuffers(false);

@@ -91,7 +91,7 @@ var lightPos = vec3.create();                   // Camera-space position of the 
 var rotY = 0.0;                                 // object rotation
 var rotY_light = 0.0;                           // light position rotation
 
-var posX = 0.0, posY = 0.0, posZ = 0.0;
+var transVec = vec3.create();
 
 function setUniforms() {
     gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
@@ -108,7 +108,7 @@ function drawScene() {
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    mat4.perspective(30, gl.viewportWidth/gl.viewportHeight, 0.1, 100.0, pMatrix);
+    mat4.perspective(30, gl.viewportWidth/gl.viewportHeight, 1.0, 100.0, pMatrix);
 
     mat4.identity(lightMatrix);
     mat4.translate(lightMatrix, [0.0, 0.5, -10.0]);
@@ -119,15 +119,15 @@ function drawScene() {
     mat4.multiplyVec3(lightMatrix, lightPos);
 
     mat4.identity(mvMatrix);
-    mat4.translate(mvMatrix, [0.0, 0.5, -5.0]);
+    mat4.translate(mvMatrix, [0.0, 0.2, -2.0]);
     //mat4.rotateX(mvMatrix, 0.3);
     
-    mat4.rotateX(mvMatrix, 0.5);
-
-    mat4.rotateY(mvMatrix, rotY);
+    mat4.rotateX(mvMatrix, 0.2);
     
     //animation
-    mat4.translate(mvMatrix, [posX, posY, posZ]);
+    
+    mat4.rotateY(mvMatrix, rotY);
+    mat4.translate(mvMatrix, transVec);
     
     setUniforms();
 
@@ -192,20 +192,23 @@ function keyUp(event){
     }
 }
 
-function handleKey(){
+function handleKey(){ //cam transform tick
     //console.log(keyCode);
+    translation = vec3.create();
     if (keyCode[0] == 1) { //W
-        posZ += 0.02;
+        vec3.add(translation, [Math.sin(Math.PI/2-(rotY+Math.PI/2)),0,Math.cos(Math.PI/2-(rotY+Math.PI/2))]);
     }
     if (keyCode[1] == 1) { //A
-        posX += 0.02;
+        rotY -= 0.02;
     }
     if (keyCode[2] == 1) { //S
-        posZ -= 0.02;
+        vec3.subtract(translation, [Math.sin(Math.PI/2-(rotY+Math.PI/2)),0,Math.cos(Math.PI/2-(rotY+Math.PI/2))]);
     }
     if (keyCode[3] == 1) { //D
-        posX -= 0.02;
+        rotY += 0.02;
     }
+    vec3.scale(translation,0.02);
+    vec3.add(transVec,translation);
 }
 
 
