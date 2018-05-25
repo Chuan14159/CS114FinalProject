@@ -88,8 +88,10 @@ var lightMatrix = mat4.create();                // Model-view matrix for the poi
 var lightPos = vec3.create();                   // Camera-space position of the light source
 
 // Animation related variables
-var rotY = -0.3;                                 // object rotation
+var rotY = 0.0;                                 // object rotation
 var rotY_light = 0.0;                           // light position rotation
+
+var posX = 0.0, posY = 0.0, posZ = 0.0;
 
 function setUniforms() {
     gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
@@ -117,12 +119,16 @@ function drawScene() {
     mat4.multiplyVec3(lightMatrix, lightPos);
 
     mat4.identity(mvMatrix);
-    mat4.translate(mvMatrix, [0.0, 0.5, -10.0]);
+    mat4.translate(mvMatrix, [0.0, 0.5, -5.0]);
     //mat4.rotateX(mvMatrix, 0.3);
     
     mat4.rotateX(mvMatrix, 0.5);
 
     mat4.rotateY(mvMatrix, rotY);
+    
+    //animation
+    mat4.translate(mvMatrix, [posX, posY, posZ]);
+    
     setUniforms();
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
@@ -147,6 +153,62 @@ var lastTime = 0;
 var rotSpeed = 60, rotSpeed_light = 60;
 var rotating = false, rotating_light = false;
 var animated = true;
+
+/*****handling keys*******/
+var keyCode = [0,0,0,0];
+function getKeyCode() {
+    document.onkeydown = keyDown;
+    document.onkeyup = keyUp;
+}
+
+function keyDown(event){
+    //console.log(event.keyCode);
+    if (event.keyCode == "87") { //W
+        keyCode[0] = 1;
+    }
+    if (event.keyCode == "65") { //A
+        keyCode[1] = 1;
+    }
+    if (event.keyCode == "83") { //S
+        keyCode[2] = 1;
+    }
+    if (event.keyCode == "68") { //D
+        keyCode[3] = 1;
+    }
+}
+
+function keyUp(event){
+    if (event.keyCode == "87") { //W
+        keyCode[0] = 0;
+    }
+    if (event.keyCode == "65") { //A
+        keyCode[1] = 0;
+    }
+    if (event.keyCode == "83") { //S
+        keyCode[2] = 0;
+    }
+    if (event.keyCode == "68") { //D
+        keyCode[3] = 0;
+    }
+}
+
+function handleKey(){
+    //console.log(keyCode);
+    if (keyCode[0] == 1) { //W
+        posZ += 0.02;
+    }
+    if (keyCode[1] == 1) { //A
+        posX += 0.02;
+    }
+    if (keyCode[2] == 1) { //S
+        posZ -= 0.02;
+    }
+    if (keyCode[3] == 1) { //D
+        posX -= 0.02;
+    }
+}
+
+
 function tick() {
     requestAnimationFrame(tick);
 
@@ -157,6 +219,8 @@ function tick() {
         rotY += rotSpeed*0.0175*elapsed/1000.0;
       if ( rotating_light )
         rotY_light += rotSpeed_light*0.0175*elapsed/1000.0;
+        handleKey();
+      
     }
     lastTime = timeNow;        
 

@@ -91,7 +91,7 @@ function initMesh() {
 
     for ( i = 0; i < meshResolution; ++i )
         for ( j = 0; j < meshResolution; ++j ) {
-            setPosition(i, j, [-2.0 + 4.0*j/(meshResolution - 1), 0.0, -2.0 + 4.0*i/(meshResolution - 1)]);
+            setPosition(i, j, [-2.0 + 4.0*j/(meshResolution - 1), -0.0, -2.0 + 4.0*i/(meshResolution - 1)]);
             setVelocity(i, j, vec3.create());
 
             if ( j < meshResolution - 1 )
@@ -234,8 +234,8 @@ function getNetForce(i,j){
     /**********Trigger upward forces*******/
     var depth = 0 - p[1];
     if (depth > 0){
-        var Ffloat = 10*9.8*depth;
-        vec3.add(NetForce, [0,10*(0.5-Math.random())+Ffloat,0]); 
+        var Ffloat = mass*10*9.8*depth+mass*10*(0.5-Math.random());
+        vec3.add(NetForce, [0,Ffloat,0]); 
     }
     
     return NetForce;
