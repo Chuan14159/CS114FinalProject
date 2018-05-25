@@ -120,6 +120,10 @@ function initMesh() {
 /*
  * KEY function: simulate one time-step using Euler's method
  */
+//rng for int
+function randomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
 
 //immutable substraction
 function sub(p,q){
@@ -227,6 +231,13 @@ function getNetForce(i,j){
     vec3.add(NetForce, getDampingForce(i,j)); //damping force
     vec3.add(NetForce, getViscousForce(i,j)); //viscous fluid force
     
+    /**********Trigger upward forces*******/
+    var depth = -1.1 - p[1];
+    if (depth > 0){
+        var Ffloat = 1000*9.8*depth;
+        vec3.add(NetForce, [0,500*(0.5-Math.random())+Ffloat,0]); 
+    }
+    
     return NetForce;
 }
 
@@ -253,17 +264,23 @@ function simulate(stepSize) {
     for(var i = 0; isValid(i); ++i){
         for(var j = 0; isValid(j); ++j){
             
-            //if pinned continue
-            if(i == meshResolution-1 || j == meshResolution-1 || j == 0 || i == 0){
-                //freeze X,Z
-                var oldpos = getPosition(i,j);
-                var newpos = getPosition(i,j);
-                v = getVelocity(i,j);
-                vec3.scale(v,stepSize);
-                vec3.add(newpos,v);
-                setPosition(i,j,[oldpos[0],oldpos[1],oldpos[2]]);
-                continue;
-            }
+//            if((i == meshResolution-1 && j == meshResolution-1) || 
+//              (i == meshResolution-1 && j == 0) ||
+//              (i == 0 && j == meshResolution-1) ||
+//              (i == 0 && j == 0)) 
+//                continue;
+            
+//            //if pinned continue
+//            if(i == meshResolution-1 || j == meshResolution-1 || j == 0 || i == 0){
+//                //freeze X,Z
+//                var oldpos = getPosition(i,j);
+//                var newpos = getPosition(i,j);
+//                v = getVelocity(i,j);
+//                vec3.scale(v,stepSize);
+//                vec3.add(newpos,v);
+//                setPosition(i,j,[oldpos[0],oldpos[1],oldpos[2]]);
+//                continue;
+//            }
             
             //update pos
             var p = getPosition(i,j);
@@ -273,4 +290,5 @@ function simulate(stepSize) {
             setPosition(i,j,p);
         }
     }
+    
 }
