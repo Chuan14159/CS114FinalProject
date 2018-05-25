@@ -85,13 +85,13 @@ function initMesh() {
     clothWireIndex = [];
 
     vertexVelocity = new Array(meshResolution*meshResolution);
-    restLength[0] = 4.0/(meshResolution - 1);
-    restLength[1] = Math.sqrt(2.0)*4.0/(meshResolution - 1);
+    restLength[0] = 8.0/(meshResolution - 1);
+    restLength[1] = Math.sqrt(2.0)*8.0/(meshResolution - 1);
     restLength[2] = 2.0*restLength[0];
 
     for ( i = 0; i < meshResolution; ++i )
         for ( j = 0; j < meshResolution; ++j ) {
-            setPosition(i, j, [-2.0 + 4.0*j/(meshResolution - 1), -0.0, -2.0 + 4.0*i/(meshResolution - 1)]);
+            setPosition(i, j, [-4.0 + 8.0*j/(meshResolution - 1), -0.0, -4.0 + 8.0*i/(meshResolution - 1)]);
             setVelocity(i, j, vec3.create());
 
             if ( j < meshResolution - 1 )

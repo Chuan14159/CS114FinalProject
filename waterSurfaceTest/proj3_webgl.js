@@ -241,7 +241,7 @@ function tick() {
 function webGLStart() {
     var canvas = $("#canvas0")[0];
 
-    meshResolution = 25;
+    meshResolution = 30;
     mass = 1.0;
     restLength = vec3.create();
     K = vec3.create([25000.0, 25000.0, 25000.0]);

@@ -98,11 +98,7 @@ function changeMeshResolution(value) {
     var id = parseInt(value, 10);
     switch ( id ) {
     case 1:
-        meshResolution = 50; break;
-    case 2:
-        meshResolution = 75; break;
-    case 3:
-        meshResolution = 100; break;
+        meshResolution = 30; break;
     }
     initMesh();
     initBuffers(false);
