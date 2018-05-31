@@ -228,6 +228,7 @@ function tick() {
     lastTime = timeNow;        
 
     drawScene();
+    drawSkybox();
 
     if ( animated ) {
         var timeStep = 0.001;
@@ -238,7 +239,11 @@ function tick() {
     }
 }
 
+
 function webGLStart() {
+    getKeyCode();
+    
+    
     var canvas = $("#canvas0")[0];
 
     meshResolution = 30;

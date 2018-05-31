@@ -45,6 +45,27 @@ function initShaders2() {
     gl.useProgram(shaderProgram);    
 }
 
+var mvMatrixStack = [];
+/**
+* Routine for pushing a current model view matrix to a stack for hieroarchial modeling
+* @return None
+*/
+function mvPushMatrix() {
+    var copy = mat4.create(mvMatrix);
+    mvMatrixStack.push(copy);
+}
+
+
+/**
+* Routine for popping a stored model view matrix from stack for hieroarchial modeling
+* @return None
+*/
+function mvPopMatrix() {
+    if (mvMatrixStack.length == 0) {
+    	throw "Invalid popMatrix!";
+    }
+    mvMatrix = mvMatrixStack.pop();
+}
 
 /*
  * Initializing and updating buffers
@@ -187,23 +208,33 @@ function drawScene() {
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    mat4.perspective(30, gl.viewportWidth/gl.viewportHeight, 1.0, 100.0, pMatrix);
+    mat4.perspective(50, gl.viewportWidth/gl.viewportHeight, 0.1, 100.0, pMatrix);
 
     mat4.identity(lightMatrix);
+    
+    
+    
+    //light animation
+    
+    mat4.rotateY(lightMatrix, rotY);
+    
+    
     mat4.translate(lightMatrix, [0.0, 0.5, -10.0]);
     //mat4.rotateX(lightMatrix, 0.3);
     mat4.rotateY(lightMatrix, rotY_light);
-
+    
     lightPos.set([0.0, 2.5, 3.0]);
     mat4.multiplyVec3(lightMatrix, lightPos);
-
+    
     mat4.identity(mvMatrix);
-    mat4.translate(mvMatrix, [0.0, 0.2, -2.0]);
+    
+    mvPushMatrix();
+    mat4.translate(mvMatrix, [0.0, -0.1, -2.0]);
     //mat4.rotateX(mvMatrix, 0.3);
     
     mat4.rotateX(mvMatrix, 0.2);
     
-    //animation
+    //cam animation
     
     mat4.rotateY(mvMatrix, rotY);
     mat4.translate(mvMatrix, transVec);
@@ -216,17 +247,14 @@ function drawScene() {
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexNormalBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
 
-    if ( drawMode == 0 ) {
-        // Normal mode
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);        
-        gl.drawElements(gl.TRIANGLES, clothIndex.length, gl.UNSIGNED_SHORT, 0);
-    }
-    else {
-        // Wire-frame mode
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, wireIndexBuffer);        
-        gl.drawElements(gl.LINES, clothWireIndex.length, gl.UNSIGNED_SHORT, 0);
-    }
+    // Normal mode
+    
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);        
+    gl.drawElements(gl.TRIANGLES, clothIndex.length, gl.UNSIGNED_SHORT, 0);
+    mvPopMatrix();
+
 }
+
 
 var lastTime = 0;
 var rotSpeed = 60, rotSpeed_light = 60;
@@ -304,9 +332,15 @@ function tick() {
         handleKey();
       
     }
-    lastTime = timeNow;        
-    //drawSkybox();
+    lastTime = timeNow;     
+    
+    initShaders();
     drawScene();
+    
+    initShaders2();
+    setupSkybox();
+    drawSkybox();
+
     
 
     if ( animated ) {
@@ -330,19 +364,15 @@ function webGLStart() {
     Cv = 0.5;    
 
     initGL(canvas);
-    initShaders();
 
     initMesh();
     initBuffers(true);
-    initShaders2();
     setupSkybox();
     gl.clearColor(0.3, 0.3, 0.3, 1.0);
     gl.enable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
     drawMode = 0;
-
+    
     setupCubeMap();
-    drawSkybox();
-
     tick();
 }

@@ -8,6 +8,103 @@
 * Function to setup the vertex and tri-index buffers for the skybox cube.
 * @return None
 */
+
+// Create a place to store the texture
+var cubeImage;
+var cubeTexture;
+// Create a place to store the texture coords for the mesh
+var cubeTCoordBuffer;
+
+// Create a place to store terrain geometry
+var cubeVertexBuffer;
+
+// Create a place to store the triangles
+var cubeTriIndexBuffer;
+/**
+* Function to pass the model view matrix to the shader program
+* @return None
+*/
+function uploadModelViewMatrixToShader() {
+	gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+}
+
+/**
+* Function to pass the projection matrix to the shader program
+* @return None
+*/
+function uploadProjectionMatrixToShader() {
+	gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
+}
+
+/**
+* Function to pass the normal matrix to the shader program
+* @return None
+*/
+function uploadNormalMatrixToShader() {
+    mat3.fromMat4(nMatrix,mvMatrix);
+    mat3.transpose(nMatrix,nMatrix);
+    mat3.invert(nMatrix,nMatrix);
+    gl.uniformMatrix3fv(shaderProgram.nMatrixUniform, false, nMatrix);
+}
+
+/**
+* Function to manipulate lighting information in shader for Phong Lighting Model
+* @return None
+*/
+function uploadLightsToShader(loc,a,d,s) {
+  gl.uniform3fv(shaderProgram.uniformLightPositionLoc, loc);
+  gl.uniform3fv(shaderProgram.uniformAmbientLightColorLoc, a);
+  gl.uniform3fv(shaderProgram.uniformDiffuseLightColorLoc, d);
+  gl.uniform3fv(shaderProgram.uniformSpecularLightColorLoc, s);
+}
+
+/**
+* Function to pass the view direction vector to the shader program
+* @return None
+*/
+function uploadViewDirToShader(){
+	gl.uniform3fv(gl.getUniformLocation(shaderProgram, "viewDir"), viewDir);
+}
+
+/**
+* Function to pass the rotation matrix to the shader program so that reflections work as the teapot spins
+* @return None
+*/
+function uploadRotateMatrixToShader(rotateMat){
+	gl.uniformMatrix4fv(gl.getUniformLocation(shaderProgram, "uRotateMat"), false, rotateMat);
+}
+
+/**
+* Routine for pushing a current model view matrix to a stack for hieroarchial modeling
+* @return None
+*/
+function mvPushMatrix() {
+    var copy = mat4.clone(mvMatrix);
+    mvMatrixStack.push(copy);
+}
+
+
+/**
+* Routine for popping a stored model view matrix from stack for hieroarchial modeling
+* @return None
+*/
+function mvPopMatrix() {
+    if (mvMatrixStack.length == 0) {
+    	throw "Invalid popMatrix!";
+    }
+    mvMatrix = mvMatrixStack.pop();
+}
+
+/**
+* Function which calls subroutines to upload model matricies to the shader program
+* @return None
+*/
+function setMatrixUniforms() {
+    uploadModelViewMatrixToShader();
+	uploadNormalMatrixToShader();
+    uploadProjectionMatrixToShader();
+}
+
 function setupSkybox() {
 
   // Create a buffer for the cube's vertices.
@@ -89,8 +186,6 @@ function setupSkybox() {
 * @return None
 */
 function drawSkybox(){
-  //switchShaders(true);
-
 	
 	// Draw the cube by binding the array buffer to the cube's vertices
 	// array, setting attributes, and pushing it to GL.
@@ -109,7 +204,6 @@ function drawSkybox(){
 
 	// Draw the cube.
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeTriIndexBuffer);
-	//setMatrixUniforms();
-  setUniforms();
+	setMatrixUniforms();
 	gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
 }
