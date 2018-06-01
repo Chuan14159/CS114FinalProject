@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+
+<head>
+	<script type="text/javascript" src="js/glMatrix-0.9.5.js"></script>
+	<script type="text/javascript" src="test_skybox.js"></script>script>
+	<script type="text/javascript" src="js/jquery-1.12.2.min.js"></script>
+	<script type="text/javascript" src="js/webgl-debug.js"></script>
+
+	<script id="shader-fs" type="x-shader/x-fragment">
+  		precision mediump float;
+
+  		//varying vec2 vTextureCoord;
+  		varying vec3 vVertexPosition;
+  		
+
+  		uniform samplerCube uSampler;
+
+  		void main(void) {
+    		gl_FragColor = textureCube(uSampler,vVertexPosition);
+  		}
+	</script>
+
+	<script id="shader-vs" type="x-shader/x-vertex">
+  		attribute vec3 aVertexPosition;
+  		//attribute vec2 aTextureCoord;
+
+  		uniform mat4 uMVMatrix;
+  		uniform mat4 uPMatrix;
+  		varying vec3 vVertexPosition;
+  		//varying vec2 vTextureCoord;
+
+  		void main(void) {
+    		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    		//vColor = aVertexColor;
+    		//vTextureCoord = aTextureCoord;
+    		vVertexPosition = aVertexPosition;
+  		}
+	</script>
+
+</head>
+<body onload="webGLStart();">
+
+  <canvas id="skybox-canvas" style="border: none;" width="500" height="500"></canvas>
+
+  <br/>
+</body>
+</html>
