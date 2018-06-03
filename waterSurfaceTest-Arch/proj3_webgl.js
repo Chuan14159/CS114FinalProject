@@ -384,8 +384,17 @@ function drawSkybox() {
     mat4.perspective(50, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
     mat4.identity(mvMatrix);
 
-    //mat4.translate(mvMatrix, [2.0, 5.0, 0.0]);
-    //mat4.rotate(mvMatrix, degToRad(90), [0, 1, 0]);
+    mvPushMatrix();
+    mat4.translate(mvMatrix, [0.0, -0.1, -2.0]);
+    
+    
+    mat4.rotateX(mvMatrix, 0.2);
+    
+    //cam animation
+    
+    mat4.rotateY(mvMatrix, rotY);
+    mat4.translate(mvMatrix, transVec);
+    
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
     gl.vertexAttribPointer(skyboxShaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
