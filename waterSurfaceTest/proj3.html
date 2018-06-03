@@ -25,7 +25,8 @@
 
 <!-- Other javascript functions -->
 <script type="text/javascript" src="proj3.js"></script>
-<script type="text/javascript" src="js/skybox.js"></script>
+<script type="text/javascript" src="skybox.js"></script>
+
 
 <!-- Vertex shader -->
 <script id="shader-vs" type="x-shader/x-vertex">
@@ -77,6 +78,57 @@
 
         gl_FragColor = vec4(I, 1.0);
     }
+</script>
+<!--arch-skybox-->
+<script id="tex-shader-vs" type="x-shader/x-vertex">
+    uniform mat4 uMVMatrix;             // Model-view matrix
+    uniform mat4 uPMatrix;              // Projection matrix
+    uniform mat4 uNMatrix;              // Normal matrix
+
+    attribute vec3 aVertexPosition;     // Vertex position in object space
+    attribute vec3 aVertexNormal;       // Vertex normal in object space
+
+    varying vec3 vPosition;             // Vertex position (camera space)
+    varying vec3 vNormal;               // Vertex normal (camera space)
+
+    //arch-skybox
+    attribute float a_is_skybox;
+
+    void main(void) {
+        vec4 camSpacePosition = uMVMatrix * vec4(aVertexPosition, 1.0);
+        vPosition = vec3(camSpacePosition);
+
+        gl_Position = uPMatrix * camSpacePosition;        
+
+        vec4 camSpaceNormal = uNMatrix * vec4(aVertexNormal, 0.0);
+        vNormal = vec3(camSpaceNormal);
+    }
+</script>
+
+<script id="skybox-shader-fs" type="x-shader/x-fragment">
+        precision mediump float;
+
+        varying vec3 vVertexPosition;
+        
+
+        uniform samplerCube uSampler;
+
+        void main(void) {
+            gl_FragColor = textureCube(uSampler,vVertexPosition);
+        }
+</script>
+
+<script id="skybox-shader-vs" type="x-shader/x-vertex">
+        attribute vec3 aVertexPosition;
+
+        uniform mat4 uMVMatrix;
+        uniform mat4 uPMatrix;
+        varying vec3 vVertexPosition;
+
+        void main(void) {
+            gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+            vVertexPosition = aVertexPosition;
+        }
 </script>
 </head>
 

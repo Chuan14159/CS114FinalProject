@@ -16,7 +16,7 @@ function initGL(canvas) {
 
 
 /*
- * Initializing shaders 
+ * Initializing cloth mesh shaders 
  */
 var shaderProgram;
 function createShader(vs_id, fs_id) {
@@ -105,6 +105,7 @@ function setUniforms() {
 
 var drawMode;
 function drawScene() {
+    gl.useProgram(shaderProgram);
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -119,7 +120,7 @@ function drawScene() {
     mat4.multiplyVec3(lightMatrix, lightPos);
 
     mat4.identity(mvMatrix);
-    mat4.translate(mvMatrix, [0.0, 0.2, -2.0]);
+    mat4.translate(mvMatrix, [0.0, -0.1, -2.0]);
     //mat4.rotateX(mvMatrix, 0.3);
     
     mat4.rotateX(mvMatrix, 0.2);
@@ -259,6 +260,10 @@ function webGLStart() {
 
     initMesh();
     initBuffers(true);
+
+    initSkyboxShaders();
+    initSkyboxBuffers();
+    initSkyboxCubeMap();
 
     gl.clearColor(0.3, 0.3, 0.3, 1.0);
     gl.enable(gl.DEPTH_TEST);
