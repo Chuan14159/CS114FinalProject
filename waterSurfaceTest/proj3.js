@@ -46,7 +46,7 @@ function updateSlider(sliderAmount) {
 
 function changeAnimatedLightState(ifAnimated) {
     rotating_light = ifAnimated;
-    $("#sliderBarLight").prop("disabled", !rotating_light);
+    $("#sliderBarLight").prop("enabled", !rotating_light);
 }
 
 function updateSliderLight(sliderAmount) {

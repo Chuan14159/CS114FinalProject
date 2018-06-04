@@ -148,7 +148,7 @@ function drawScene() {
 
 var lastTime = 0;
 var rotSpeed = 60, rotSpeed_light = 60;
-var rotating = false, rotating_light = false;
+var rotating = false, rotating_light = true;
 var animated = true;
 
 /*****handling keys*******/

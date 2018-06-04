@@ -168,16 +168,16 @@ arch-skybox
                     </td>
                 </tr>
                 <tr>
-                    <td><input type="checkbox" onchange="changeRotatingState(this.checked);">Rotating object</td>
+                    <td><input type="checkbox"  onchange="changeRotatingState(this.checked);">Rotating object</td>
                     <td>
                         <input id="sliderBar" type="range" min="1" max="36" value="6" onchange="updateSlider(this.value);" disabled>
                         (<span id="sliderAmount">60</span>&deg;/s)
                     </td>
                 </tr>        
                 <tr>
-                    <td><input type="checkbox" onchange="changeAnimatedLightState(this.checked);">Rotating light</td>
+                    <td><input type="checkbox" onchange="changeAnimatedLightState(this.checked);" checked>Rotating light</td>
                     <td>
-                        <input id="sliderBarLight" type="range" min="1" max="36" value="6" onchange="updateSliderLight(this.value);" disabled>
+                        <input id="sliderBarLight" type="range" min="1" max="36" value="6" onchange="updateSliderLight(this.value);">
                         (<span id="sliderAmountLight">60</span>&deg;/s)
                     </td>
                 </tr>
