@@ -25,7 +25,7 @@
 
 <!-- Other javascript functions -->
 <script type="text/javascript" src="proj3.js"></script>
-<script type="text/javascript" src="skybox.js"></script>
+<script type="text/javascript" src="skybox.js"></script></script>
 
 
 <!-- Vertex shader -->
@@ -58,6 +58,8 @@
     uniform vec3 uLightPos;             // Light position in camera space
     varying vec3 vPosition;             // Fragment position (camera space)
     varying vec3 vNormal;               // Fragment normal (camera space)
+    
+    uniform samplerCube uSampler;
 
     void main(void) {
         vec3 vLight = uLightPos - vPosition;
@@ -70,16 +72,19 @@
         if ( dot(vNormal_, vView) < 0.0 ) vNormal_ = -vNormal_;
 
         vec3 diffClr = vec3(0.2, 0.8, 1);
-        float ambient = 0.2;
+        float ambient = 0.5;
 
         float diff = max(dot(vNormal_, vLight), 0.0);
-        float spec = pow(max(dot(vNormal_, vHalf), 0.0), 10.0);
-        vec3 I = 5.0*(diffClr*diff + spec)/(5.0 + 0.2*dist*dist) + diffClr*ambient;
-
-        gl_FragColor = vec4(I, 1.0);
+        float spec = pow(max(dot(vNormal_, vHalf), 0.0), 150.0);
+        vec3 I = 20.0*(diffClr*diff + spec)/(5.0 + 0.2*dist*dist) + diffClr*ambient;
+        
+        vec3 refraction = refract(vPosition, vNormal_,1.33);
+        vec3 reflection = reflect(vPosition, vNormal_);
+        gl_FragColor = textureCube(uSampler,refraction)*0.4+textureCube(uSampler,reflection)*0.4+vec4(I,1.0)*0.2;
     }
 </script>
-<!--arch-skybox-->
+<!--
+arch-skybox
 <script id="tex-shader-vs" type="x-shader/x-vertex">
     uniform mat4 uMVMatrix;             // Model-view matrix
     uniform mat4 uPMatrix;              // Projection matrix
@@ -104,13 +109,13 @@
         vNormal = vec3(camSpaceNormal);
     }
 </script>
+-->
 
 <script id="skybox-shader-fs" type="x-shader/x-fragment">
         precision mediump float;
 
         varying vec3 vVertexPosition;
         
-
         uniform samplerCube uSampler;
 
         void main(void) {
@@ -120,7 +125,6 @@
 
 <script id="skybox-shader-vs" type="x-shader/x-vertex">
         attribute vec3 aVertexPosition;
-
         uniform mat4 uMVMatrix;
         uniform mat4 uPMatrix;
         varying vec3 vVertexPosition;

@@ -97,39 +97,39 @@ function initSkyboxBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER,cubeVertexPositionBuffer);
     var vertices = [
     // Front face
-    -10.0, -10.0,  10.0,
-     10.0, -10.0,  10.0,
-     10.0,  10.0,  10.0,
-    -10.0,  10.0, 10.0,
+    -100.0, -100.0,  100.0,
+     100.0, -100.0,  100.0,
+     100.0,  100.0,  100.0,
+    -100.0,  100.0, 100.0,
 
     // Back face
-    -10.0, -10.0, -10.0,
-    -10.0,  10.0, -10.0,
-     10.0,  10.0, -10.0,
-     10.0, -10.0, -10.0,
+    -100.0, -100.0, -100.0,
+    -100.0,  100.0, -100.0,
+     100.0,  100.0, -100.0,
+     100.0, -100.0, -100.0,
 
     // Top face
-    -10.0,  10.0, -10.0,
-    -10.0,  10.0,  10.0,
-     10.0,  10.0,  10.0,
-     10.0,  10.0, -10.0,
+    -100.0,  100.0, -100.0,
+    -100.0,  100.0,  100.0,
+     100.0,  100.0,  100.0,
+     100.0,  100.0, -100.0,
     // Bottom face
-    -10.0, -10.0, -10.0,
-     10.0, -10.0, -10.0,
-     10.0, -10.0,  10.0,
-    -10.0, -10.0,  10.0,
+    -100.0, -100.0, -100.0,
+     100.0, -100.0, -100.0,
+     100.0, -100.0,  100.0,
+    -100.0, -100.0,  100.0,
 
     // Right face
-     10.0, -10.0, -10.0,
-     10.0,  10.0, -10.0,
-     10.0,  10.0,  10.0,
-     10.0, -10.0,  10.0,
+     100.0, -100.0, -100.0,
+     100.0,  100.0, -100.0,
+     100.0,  100.0,  100.0,
+     100.0, -100.0,  100.0,
 
     // Left face
-    -10.0, -10.0, -10.0,
-    -10.0, -10.0,  10.0,
-    -10.0,  10.0,  10.0,
-    -10.0,  10.0, -10.0
+    -100.0, -100.0, -100.0,
+    -100.0, -100.0,  100.0,
+    -100.0,  100.0,  100.0,
+    -100.0,  100.0, -100.0
   ];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     cubeVertexPositionBuffer.itemSize = 3;
@@ -213,11 +213,10 @@ function drawSkybox() {
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    mat4.perspective(50, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+    mat4.perspective(50, gl.viewportWidth / gl.viewportHeight, 0.1, 500.0, pMatrix);
     mat4.identity(mvMatrix);
-
-    mvPushMatrix();
-    mat4.translate(mvMatrix, [0.0, -0.1, -2.0]);
+    
+    mat4.translate(mvMatrix, [0.0, -25.0, -8.0]);
     
     
     mat4.rotateX(mvMatrix, 0.2);

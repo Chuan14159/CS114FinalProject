@@ -31,6 +31,7 @@ function createShader(vs_id, fs_id) {
     shaderProg.mvMatrixUniform = gl.getUniformLocation(shaderProg, "uMVMatrix");
     shaderProg.nMatrixUniform = gl.getUniformLocation(shaderProg, "uNMatrix");
     shaderProg.lightPosUniform = gl.getUniformLocation(shaderProg, "uLightPos");
+    shaderProg.samplerUniform = gl.getUniformLocation(shaderProg, "uSampler");
 
     return shaderProg;
 }
@@ -103,13 +104,13 @@ function setUniforms() {
     gl.uniform3fv(shaderProgram.lightPosUniform, lightPos);
 }
 
-var drawMode;
+//var drawMode;
 function drawScene() {
     gl.useProgram(shaderProgram);
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    mat4.perspective(30, gl.viewportWidth/gl.viewportHeight, 1.0, 100.0, pMatrix);
+    mat4.perspective(50, gl.viewportWidth/gl.viewportHeight, 1.0, 500.0, pMatrix);
 
     mat4.identity(lightMatrix);
     mat4.translate(lightMatrix, [0.0, 0.5, -10.0]);
@@ -120,7 +121,7 @@ function drawScene() {
     mat4.multiplyVec3(lightMatrix, lightPos);
 
     mat4.identity(mvMatrix);
-    mat4.translate(mvMatrix, [0.0, -0.1, -2.0]);
+    mat4.translate(mvMatrix, [0.0, -1.0, -8.0]);
     //mat4.rotateX(mvMatrix, 0.3);
     
     mat4.rotateX(mvMatrix, 0.2);
@@ -138,16 +139,11 @@ function drawScene() {
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexNormalBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
 
-    if ( drawMode == 0 ) {
-        // Normal mode
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);        
-        gl.drawElements(gl.TRIANGLES, clothIndex.length, gl.UNSIGNED_SHORT, 0);
-    }
-    else {
-        // Wire-frame mode
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, wireIndexBuffer);        
-        gl.drawElements(gl.LINES, clothWireIndex.length, gl.UNSIGNED_SHORT, 0);
-    }
+
+    // Normal mode
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);      
+    gl.drawElements(gl.TRIANGLES, clothIndex.length, gl.UNSIGNED_SHORT, 0);
+
 }
 
 var lastTime = 0;
@@ -244,7 +240,6 @@ function tick() {
 function webGLStart() {
     getKeyCode();
     
-    
     var canvas = $("#canvas0")[0];
 
     meshResolution = 30;
@@ -268,7 +263,7 @@ function webGLStart() {
     gl.clearColor(0.3, 0.3, 0.3, 1.0);
     gl.enable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
-    drawMode = 0;
+    //drawMode = 0;
 
     tick();
 }
