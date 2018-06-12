@@ -165,13 +165,14 @@ arch-skybox
             }
 
             vec3 lightDir = uLightPos - vVertexPosition;
+            lightDir = normalize(lightDir);
             
             //test if normals of the mesh is passed to shader
             //if sucessful, it will substract green color at the bottom part and slightly change the red and blue color :D
             
-            vec3 vColor = uNormals[899];
-            if (vVertexPosition[1] <= -3.5) 
-                gl_FragColor += vec4(vColor,1.0);
+            //vec3 vColor = uNormals[899];
+            //if (vVertexPosition[1] <= -3.5) 
+            //    gl_FragColor += vec4(vColor,1.0);
             
             // TODO:
             // each vertex normal default is 0,-1,0;
@@ -181,8 +182,17 @@ arch-skybox
             
             //(*^▽^*)
             
+            vec3 UP = vec3(0.0,1.0,0.0);
+            float dist2surf = 1.8 - vVertexPosition[1];
+            if (dist2surf <= 0.0) return;
+            float dist2intersect = 1.0/dot(UP,lightDir)*dist2surf;
             
+            vec3 intersectPt = vVertexPosition+lightDir*dist2intersect;
+            //if (intersectPt[0] >= -4.0 && intersectPt[0] <= 4.0)
+                //gl_FragColor += vec4(lightDir,1.0);
             
+            //if (intersectPt[2] >= 4.0 || intersectPt[2] <= -4.0 )
+                //gl_FragColor += vec4(lightDir,1.0);
         }
 </script>
 
