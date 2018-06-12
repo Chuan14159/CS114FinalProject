@@ -131,6 +131,12 @@ function initSkyboxBuffers() {
     -100.0,  100.0,  100.0,
     -100.0,  100.0, -100.0
   ];
+    
+    
+//    for(var i=0; i<vertices.length; i++) {
+//        vertices[i] *= 0.5;
+//    }
+    
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     cubeVertexPositionBuffer.itemSize = 3;
     cubeVertexPositionBuffer.numItems = 24;
@@ -216,15 +222,15 @@ function drawSkybox() {
     mat4.perspective(50, gl.viewportWidth / gl.viewportHeight, 0.1, 500.0, pMatrix);
     mat4.identity(mvMatrix);
     
-    mat4.translate(mvMatrix, [0.0, -25.0, -8.0]);
+    mat4.translate(mvMatrix, [0.0, -75.0, -50.0]);
     
     
-    mat4.rotateX(mvMatrix, 0.2);
+    mat4.rotateX(mvMatrix, 0.5);
     
     //cam animation
     
-    mat4.rotateY(mvMatrix, rotY);
-    mat4.translate(mvMatrix, transVec);
+//    mat4.rotateY(mvMatrix, rotY);
+//    mat4.translate(mvMatrix, transVec);
     
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
     gl.vertexAttribPointer(skyboxShaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);

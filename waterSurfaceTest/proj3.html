@@ -2,7 +2,7 @@
 <html>
 
 <head>
-<title>CS114 Project 3: Mass-Spring System</title>
+<title>CS114 Final Project: Water Rendering</title>
 <meta charset="utf-8">
 <link href="css/proj3.css" rel="stylesheet">
 
@@ -25,7 +25,9 @@
 
 <!-- Other javascript functions -->
 <script type="text/javascript" src="proj3.js"></script>
-<script type="text/javascript" src="skybox.js"></script></script>
+<script type="text/javascript" src="skybox.js"></script>
+<script type="text/javascript" src="pool.js"></script>
+<script type="text/javascript" src="waterTexture.js"></script>
 
 
 <!-- Vertex shader -->
@@ -41,12 +43,22 @@
     varying vec3 vNormal;               // Vertex normal (camera space)
 
     void main(void) {
+    
+        vec3 fakePos = aVertexPosition;
+        vec3 fakeNormal = aVertexNormal;
+    
         vec4 camSpacePosition = uMVMatrix * vec4(aVertexPosition, 1.0);
         vPosition = vec3(camSpacePosition);
 
         gl_Position = uPMatrix * camSpacePosition;        
-
-        vec4 camSpaceNormal = uNMatrix * vec4(aVertexNormal, 0.0);
+        
+        
+        
+        vec4 fakeCamSpacePosition = uMVMatrix * vec4(fakePos, 1.0);
+        vPosition = vec3(fakeCamSpacePosition);
+        
+        
+        vec4 camSpaceNormal = uNMatrix * vec4(fakeNormal, 0.0);
         vNormal = vec3(camSpaceNormal);
     }
 </script>
@@ -58,7 +70,7 @@
     uniform vec3 uLightPos;             // Light position in camera space
     varying vec3 vPosition;             // Fragment position (camera space)
     varying vec3 vNormal;               // Fragment normal (camera space)
-    
+
     uniform samplerCube uSampler;
 
     void main(void) {
@@ -78,7 +90,7 @@
         float spec = pow(max(dot(vNormal_, vHalf), 0.0), 150.0);
         vec3 I = 20.0*(diffClr*diff + spec)/(5.0 + 0.2*dist*dist) + diffClr*ambient;
         
-        vec3 refraction = refract(vPosition, vNormal_,1.33);
+        vec3 refraction = refract(vPosition, vNormal_,1.0/1.33);
         vec3 reflection = reflect(vPosition, vNormal_);
         gl_FragColor = textureCube(uSampler,refraction)*0.4+textureCube(uSampler,reflection)*0.4+vec4(I,1.0)*0.2;
     }
@@ -117,7 +129,7 @@ arch-skybox
         varying vec3 vVertexPosition;
         
         uniform samplerCube uSampler;
-
+        
         void main(void) {
             gl_FragColor = textureCube(uSampler,vVertexPosition);
         }
@@ -134,12 +146,73 @@ arch-skybox
             vVertexPosition = aVertexPosition;
         }
 </script>
+    
+    
+<script id="pool-shader-fs" type="x-shader/x-fragment">
+        precision mediump float;
+
+        varying vec3 vVertexPosition;
+        uniform vec3 uLightPos;
+        uniform samplerCube uSampler;
+
+        void main(void) {
+            if (vVertexPosition[1] <= 1.8){
+                gl_FragColor = 0.8*textureCube(uSampler,vVertexPosition) + 0.2*vec4(0.2,0.8,1.0,1.0);
+            }
+            else{
+                gl_FragColor = textureCube(uSampler,vVertexPosition);
+            }
+
+            vec3 lightDir = uLightPos - vVertexPosition;
+            
+            //rofl...
+        }
+</script>
+
+<script id="pool-shader-vs" type="x-shader/x-vertex">
+        attribute vec3 aVertexPosition;
+        uniform mat4 uMVMatrix;
+        uniform mat4 uPMatrix;
+        varying vec3 vVertexPosition;
+        void main(void) {
+            gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+            vVertexPosition = aVertexPosition;
+        }
+</script>
+
+    
+    
+    
+<script id="water-shader-fs" type="x-shader/x-fragment">
+        precision mediump float;
+
+        varying vec3 vVertexPosition;
+        
+        uniform samplerCube uSampler;
+
+        void main(void) {
+            gl_FragColor = textureCube(uSampler,vVertexPosition);
+        }
+</script>
+
+<script id="water-shader-vs" type="x-shader/x-vertex">
+        attribute vec3 aVertexPosition;
+        uniform mat4 uMVMatrix;
+        uniform mat4 uPMatrix;
+        varying vec3 vVertexPosition;
+
+        void main(void) {
+            gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+            vVertexPosition = aVertexPosition;
+        }
+</script>
+    
 </head>
 
 
 <!-- HTML contents -->
 <body>
-    <h1>CS114 Project 3: Mass-Spring System</h1>
+    <h1>CS114 Final Project: Water Rendering</h1>
 
     <div style="margin-top:10px; float:left">
         <canvas id="canvas0" style="border:none;" width="960" height="720"></canvas>
@@ -157,23 +230,7 @@ arch-skybox
                             <option value="2" selected="selected">960x720</option>
                         </select>
                     </td>
-                </tr>
-                <tr>
-                    <td>Drawing Mode</td>
-                    <td>
-                        <select onchange="changeMode(this.value);">
-                            <option value="0" selected="selected">Normal</option>
-                            <option value="1">Wire-frame</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"  onchange="changeRotatingState(this.checked);">Rotating object</td>
-                    <td>
-                        <input id="sliderBar" type="range" min="1" max="36" value="6" onchange="updateSlider(this.value);" disabled>
-                        (<span id="sliderAmount">60</span>&deg;/s)
-                    </td>
-                </tr>        
+                </tr>       
                 <tr>
                     <td><input type="checkbox" onchange="changeAnimatedLightState(this.checked);" checked>Rotating light</td>
                     <td>
@@ -184,71 +241,12 @@ arch-skybox
             </table>
         </div>
         <div style="clear:left"></div>
-        <div class="panel">
-            <p>Animation Control</p>
-            <table>
-                <tr>
-                    <td width="200px">Mesh Resolution</td>
-                    <td width="230px">
-                        <select onchange="changeMeshResolution(this.value);">
-                            <option value="1" selected="selected">30x30</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input type="checkbox" onchange="changeAnimatedState(this.checked);" checked>Animated
-                    </td>
-                    <td>
-                        <button type="botton" onclick="resetMesh();">Restart</button>
-                        &nbsp;
-                        <button type="botton" onclick="window.location.reload();">Reset parameters</button>
-                    </td>                
-                </tr>
-                <tr>
-                    <td>Particle Mass</td>
-                    <td>
-                        <input type="range" min="1" max="50" value="10" onchange="updateSliderMass(this.value);">
-                        (<span id="sliderAmountMass">1.0</span>)
-                    </td>
-                </tr>             
-                <tr>
-                    <td>Structural Stiffness</td>
-                    <td>
-                        <input type="range" min="1" max="50" value="25" onchange="updateSliderK0(this.value);">
-                        (<span id="sliderAmountK0">25</span>&times;10<sup>3</sup>)
-                    </td>
-                </tr>
-                <tr>
-                    <td>Shear Stiffness</td>
-                    <td>
-                        <input type="range" min="1" max="50" value="25" onchange="updateSliderK1(this.value);">
-                        (<span id="sliderAmountK1">25</span>&times;10<sup>3</sup>)
-                    </td>
-                </tr>
-                <tr>
-                    <td>Bend Stiffness</td>
-                    <td>
-                        <input type="range" min="1" max="50" value="25" onchange="updateSliderK2(this.value);">
-                        (<span id="sliderAmountK2">25</span>&times;10<sup>3</sup>)
-                    </td>
-                </tr>
-                <tr>
-                    <td>Damping</td>
-                    <td>
-                        <input type="range" min="0" max="10" value="5" onchange="updateSliderCd(this.value);">
-                        (<span id="sliderAmountCd">0.5</span>)
-                    </td>
-                </tr>
-                <tr>
-                    <td>Viscous</td>
-                    <td>
-                        <input type="range" min="0" max="20" value="5" onchange="updateSliderCv(this.value);">
-                        (<span id="sliderAmountCv">0.5</span>)
-                    </td>
-                </tr>            
-            </table>
-        </div>
+        
+        <p><b><ins>Realtime Water Surface Rendering and Caustics</ins></b></p>
+        <p><b>Author:</b></p>
+        <p>Changchuan Shen</p>
+        <p>Archana Senthilkumar</p>
+        <p>Hannah T. Tran</p>
     </div>
     <div style="clear:left"></div>
 </body>

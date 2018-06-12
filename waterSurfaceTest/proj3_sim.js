@@ -234,7 +234,7 @@ function getNetForce(i,j){
     /**********Trigger upward forces*******/
     var depth = 0 - p[1];
     if (depth > 0){
-        var Ffloat = mass*10*9.8*depth+mass*10*(0.5-Math.random());
+        var Ffloat = mass*10*9.8*depth+mass*30*(0.5-Math.random());
         vec3.add(NetForce, [0,Ffloat,0]); 
     }
     

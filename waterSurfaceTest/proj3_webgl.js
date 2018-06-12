@@ -53,6 +53,7 @@ function initBuffers(createBuffers) {
         indexBuffer = gl.createBuffer();
         wireIndexBuffer = gl.createBuffer();        
     }
+    
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(vertexPosition), gl.DYNAMIC_DRAW);
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexNormalBuffer);
@@ -90,9 +91,10 @@ var lightPos = vec3.create();                   // Camera-space position of the 
 
 // Animation related variables
 var rotY = 0.0;                                 // object rotation
+var rotX = 0.0;                                 // object rotation
 var rotY_light = 0.0;                           // light position rotation
 
-var transVec = vec3.create();
+//var transVec = vec3.create();
 
 function setUniforms() {
     gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
@@ -110,7 +112,7 @@ function drawScene() {
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    mat4.perspective(50, gl.viewportWidth/gl.viewportHeight, 1.0, 500.0, pMatrix);
+    mat4.perspective(50, gl.viewportWidth/gl.viewportHeight, 0.1, 500.0, pMatrix);
 
     mat4.identity(lightMatrix);
     mat4.translate(lightMatrix, [0.0, 0.5, -10.0]);
@@ -121,15 +123,16 @@ function drawScene() {
     mat4.multiplyVec3(lightMatrix, lightPos);
 
     mat4.identity(mvMatrix);
-    mat4.translate(mvMatrix, [0.0, -1.0, -8.0]);
+    mat4.translate(mvMatrix, [0.0, 1.0, -20.0]);
     //mat4.rotateX(mvMatrix, 0.3);
     
-    mat4.rotateX(mvMatrix, 0.2);
+    mat4.rotateX(mvMatrix, 0.4);
     
     //animation
     
-    mat4.rotateY(mvMatrix, rotY);
-    mat4.translate(mvMatrix, transVec);
+    //mat4.rotateY(mvMatrix, rotY);
+    //mat4.rotateX(mvMatrix, rotX);
+    //mat4.translate(mvMatrix, transVec);
     
     setUniforms();
 
@@ -191,21 +194,23 @@ function keyUp(event){
 
 function handleKey(){ //cam transform tick
     //console.log(keyCode);
-    var transition = vec3.create();
+    //var transition = vec3.create();
     if (keyCode[0] == 1) { //W
-        vec3.add(transition, [Math.sin(Math.PI/2-(rotY+Math.PI/2)),0,Math.cos(Math.PI/2-(rotY+Math.PI/2))]);
+        //vec3.add(transition, [Math.sin(Math.PI/2-(rotY+Math.PI/2)),0,Math.cos(Math.PI/2-(rotY+Math.PI/2))]);
+        if(rotX < 0.3) rotX += 0.005;
     }
     if (keyCode[1] == 1) { //A
-        rotY -= 0.02;
+        if(rotY > -0.3) rotY -= 0.005;
     }
     if (keyCode[2] == 1) { //S
-        vec3.subtract(transition, [Math.sin(Math.PI/2-(rotY+Math.PI/2)),0,Math.cos(Math.PI/2-(rotY+Math.PI/2))]);
+        //vec3.subtract(transition, [Math.sin(Math.PI/2-(rotY+Math.PI/2)),0,Math.cos(Math.PI/2-(rotY+Math.PI/2))]);
+        if(rotX > -0.3) rotX -= 0.005;
     }
     if (keyCode[3] == 1) { //D
-        rotY += 0.02;
+        if(rotY < 0.3) rotY += 0.005;
     }
-    vec3.scale(transition,0.02);
-    vec3.add(transVec,transition);
+    //vec3.scale(transition,0.02);
+    //vec3.add(transVec,transition);
 }
 
 
@@ -226,6 +231,9 @@ function tick() {
 
     drawScene();
     drawSkybox();
+    drawPool();
+    drawWater();
+
 
     if ( animated ) {
         var timeStep = 0.001;
@@ -259,6 +267,14 @@ function webGLStart() {
     initSkyboxShaders();
     initSkyboxBuffers();
     initSkyboxCubeMap();
+    
+    initPoolShaders();
+    initPoolBuffers();
+    initPoolCubeMap();
+    
+    initWaterShaders();
+    initWaterBuffers();
+    initWaterCubeMap();
 
     gl.clearColor(0.3, 0.3, 0.3, 1.0);
     gl.enable(gl.DEPTH_TEST);
