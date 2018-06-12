@@ -154,6 +154,7 @@ arch-skybox
         varying vec3 vVertexPosition;
         uniform vec3 uLightPos;
         uniform samplerCube uSampler;
+        uniform vec3 uNormals[900];
 
         void main(void) {
             if (vVertexPosition[1] <= 1.8){
@@ -165,7 +166,23 @@ arch-skybox
 
             vec3 lightDir = uLightPos - vVertexPosition;
             
-            //rofl...
+            //test if normals of the mesh is passed to shader
+            //if sucessful, it will substract green color at the bottom part
+            
+            vec3 vColor = uNormals[899];
+            if (vVertexPosition[1] <= -3.5) 
+                gl_FragColor += vec4(vColor,1.0);
+            
+            // TODO:
+            // each vertex normal default is 0,-1,0;
+            // Water surface y position is 1.8
+            // pool range is x,y,z = [-4.0 to 4.0]
+            // Starting from vVertexPosition, trace along lightDir to calculate the point at the height of 1.8, if the point x and z in range -4.0 ~ 4.0, translate the point x and z to the index at uNormals vector[900], find dot(lightDir,normal){^+-*/}STRONGLIGHT and add to gl_FragColor
+            
+            //(*^▽^*)
+            
+            
+            
         }
 </script>
 

@@ -58,6 +58,8 @@ var poolShaderProgram;
     poolShaderProgram.samplerUniform = gl.getUniformLocation(poolShaderProgram, "uSampler");
     poolShaderProgram.lightPosUniform = 
     gl.getUniformLocation(poolShaderProgram, "uLightPos");
+    poolShaderProgram.normalsUniform = 
+    gl.getUniformLocation(poolShaderProgram, "uNormals");
   }
 
 
@@ -66,9 +68,21 @@ function setPoolMatrixUniforms() {
     gl.uniformMatrix4fv(poolShaderProgram.pMatrixUniform, false, pMatrix);
     gl.uniformMatrix4fv(poolShaderProgram.mvMatrixUniform, false, mvMatrix);
     gl.uniform3fv(poolShaderProgram.lightPosUniform, lightPos);
+    var normals = Array.apply(null, Array(2700)).map(function(x, k) {
+        var i = Math.floor(k/90);
+        var j = (k - k % 3)/3 % 30;
+        var xyz = k % 3;
+        
+        return -getNormal(i,j)[xyz]; 
+    });
+    gl.uniform3fv(poolShaderProgram.normalsUniform, normals);
+//    console.log(normals[2697]);
+//    console.log(normals[2698]);
+//    console.log(normals[2699]);
  }
 
 var poolVertexPositionBuffer;
+//var poolVertexCausticBuffer;
 var poolVertexIndexBuffer;
 
 function initPoolBuffers() {
@@ -219,6 +233,8 @@ function drawPool() {
     gl.bindBuffer(gl.ARRAY_BUFFER, poolVertexPositionBuffer);
     gl.vertexAttribPointer(poolShaderProgram.vertexPositionAttribute, poolVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
+    
+    
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, poolTexture);
     gl.uniform1i(poolShaderProgram.samplerUniform, 0);
