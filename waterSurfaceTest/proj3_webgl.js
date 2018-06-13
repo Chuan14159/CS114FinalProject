@@ -119,7 +119,7 @@ function drawScene() {
     //mat4.rotateX(lightMatrix, 0.3);
     mat4.rotateY(lightMatrix, rotY_light);
 
-    lightPos.set([0.0, 2.5, 3.0]);
+    lightPos.set([-3.0, 20.0, 5.0]);
     mat4.multiplyVec3(lightMatrix, lightPos);
 
     mat4.identity(mvMatrix);
@@ -151,7 +151,7 @@ function drawScene() {
 
 var lastTime = 0;
 var rotSpeed = 60, rotSpeed_light = 60;
-var rotating = false, rotating_light = true;
+var rotating = false, rotating_light = false;
 var animated = true;
 
 /*****handling keys*******/
